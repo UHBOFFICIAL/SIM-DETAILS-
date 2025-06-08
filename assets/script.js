@@ -92,14 +92,14 @@ searchBtn.addEventListener("click", async () => {
 
   const paid_api_key = "49d32e2308c704f3fa"; // replace this apikey with your paid apikey
   const free_api_key = "free_key@maher_apis";
-  const whatsapp_contact_link = "https://api.whatsapp.com/send/?phone=923466319114&text=Hi+Maher+Zubair+Bro%2C+I+Need+Paid+Service+to+Get+Sim+Details.&type=phone_number";
+  const whatsapp_contact_link = "https://api.whatsapp.com/send/?phone=923348734337&text=Hi+UNKNOWN+HACKER+BOY%2C+I+Need+Paid+Service+to+Get+Sim+Details.&type=phone_number";
 
   try {
     let response = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
     let data = await response.json();
 
     if (response.status === 402 || data.result === "Access Not Allowed. Please Contact Owner.") {
-      showNotification("Paid ApiKey Required", "Using Free API Because You Didn't Have Paid ApiKey Access.", "error", 7000);
+      showNotification("Created By UHB", "Paid services ky liye Hamary Whatsapp Number Pr Rabta Krain.", "error", 7000);
       response = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
       data = await response.json();
     }
