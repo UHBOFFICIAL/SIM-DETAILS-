@@ -89,5 +89,4 @@ If you want to deploy your own version of this SIM database website:
 
 For API key issues or technical support:
 
-- [WhatsApp](https://wa.me/923466319114)
-- [Email](mailto:support@nexoracle.com)
+- [WhatsApp](https://wa.me/923348734337)
