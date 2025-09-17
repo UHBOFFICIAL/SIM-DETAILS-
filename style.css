@@ -66,11 +66,23 @@ button:hover {opacity: 0.9;}
 .response-box {
   margin-top: 20px;
   overflow-x: auto;
+  border: 1px solid #00fff7;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 20px rgba(0,255,247,0.1);
 }
+.results-heading {
+  text-align: center;
+  color: #00fff7;
+  text-shadow: 0 0 8px #00fff7;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
   color: white;
+  margin-top: 10px;
 }
 th, td {
   border: 1px solid #00fff7;
@@ -125,19 +137,3 @@ background: rgba(0,0,0,0.8);display: flex;justify-content: center;align-items: c
 .popup-btn:hover {opacity: 0.9;}
 .popup-close {display: block;margin-top: 10px;color: #ccc;cursor: pointer;}
 .popup-close:hover {color: white;}
-
-.notification {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: #111;
-  border-left: 4px solid #00fff7;
-  padding: 10px 15px;
-  border-radius: 8px;
-  display: flex;
-  gap: 10px;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.3s ease;
-}
-.notification.show {opacity: 1;transform: translateX(0);}
