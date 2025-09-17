@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Center Notification function
   function showNotification(msg) {
     const notification = document.getElementById("notification");
+    if (!notification) return;
     notification.innerHTML = msg;
     notification.classList.remove("hidden");
     notification.classList.add("show");
@@ -73,18 +74,47 @@ document.addEventListener("DOMContentLoaded", () => {
           </thead><tbody>
       `;
       const resultsArray = Array.isArray(data.result) ? data.result : [data.result];
+
+      let validDataFound = false;
+
       resultsArray.forEach(user => {
-        table += `
-          <tr>
-            <td>${user.name || "-"}</td>
-            <td>${user.number || "-"}</td>
-            <td>${user.cnic || "-"}</td>
-            <td>${user.operator || "-"}</td>
-            <td>${user.address || "-"}</td>
-            <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
-          </tr>`;
+        // normalize fields to strings
+        const name = (user && user.name) ? String(user.name) : "";
+        const numberField = (user && user.number) ? String(user.number) : "";
+        const cnic = (user && user.cnic) ? String(user.cnic) : "";
+        const operator = (user && user.operator) ? String(user.operator) : "";
+        const address = (user && user.address) ? String(user.address) : "";
+
+        // Trimmed values for checks
+        const vals = [name, numberField, cnic, operator, address].map(v => v.trim());
+
+        // Consider invalid if empty/whitespace or common placeholders like "-" or "----" or "____"
+        const allInvalid = vals.every(val =>
+          val === "" || val === "-" || val === "----" || val === "____"
+        );
+
+        if (!allInvalid) {
+          validDataFound = true;
+          table += `
+            <tr>
+              <td>${name || "-"}</td>
+              <td>${numberField || "-"}</td>
+              <td>${cnic || "-"}</td>
+              <td>${operator || "-"}</td>
+              <td>${address || "-"}</td>
+              <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
+            </tr>`;
+        }
       });
+
       table += "</tbody></table>";
+
+      // ✅ Agar saara data invalid tha → notification dikhado
+      if (!validDataFound) {
+        showNotification("اس نمبر کا ڈیٹا موجود نہیں ہے ۔<br>Paid Services کیلئے Admin سے رابطہ کریں");
+        return;
+      }
+
       resultsList.innerHTML = table;
       resultsContainer.classList.remove("hidden");
     } catch (e) {
@@ -98,6 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = `Name: ${user.name}\nNumber: ${user.number}\nCNIC: ${user.cnic}\nOperator: ${user.operator}\nAddress: ${user.address}`;
     navigator.clipboard.writeText(text).then(() => {
       alert("Copied:\n" + text);
+    }).catch(() => {
+      alert("Could not copy to clipboard.");
     });
   };
 
@@ -106,9 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupClose = document.getElementById("popupClose");
 
   function showPopup() {
+    if (!popup) return;
     popup.style.display = "flex";
   }
   function hidePopup() {
+    if (!popup) return;
     popup.style.display = "none";
   }
   showPopup();
