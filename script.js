@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       let data = await res.json();
 
-      // fallback to free API
+      // fallback
       if (
         res.status === 402 ||
         (data && data.result === "Access Not Allowed. Please Contact Owner.")
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       spinner.style.display = "none";
 
-      // ✅ No Data Condition
+      // ✅ No Data => Show Urdu Custom Message
       if (
         !data ||
         !data.result ||
@@ -61,15 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
         (Array.isArray(data.result) && data.result.length === 0)
       ) {
         resultsList.innerHTML = `
-          <div style="text-align:center; padding:20px;">
-            <h3 style="color:#ffb86b;">⚠ No Record Found</h3>
-            <p style="color:#ddd;">This number is not available in our database.<br/>Try another number or contact admin.</p>
+          <div style="text-align:center; padding:20px; background:#222; border-radius:8px;">
+            <h3 style="color:#ff6666; margin-bottom:10px;">اس نمبر کا ڈیٹا موجود نہیں ہے ۔</h3>
+            <p style="color:#00fff7; font-weight:bold;">Paid Services کیلئے Admin سے رابطہ کریں</p>
           </div>`;
         resultsContainer.classList.remove("hidden");
-        return; // ❌ Table banane ka code yahan STOP ho gaya
+        return; // ❌ Stop here, no table
       }
 
-      // ✅ Only if real data exists, then build table
+      // ✅ Show Table if Data Exists
       let table = `
         <table>
           <thead>
