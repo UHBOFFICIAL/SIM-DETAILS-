@@ -1,4 +1,3 @@
-/* ----------------- Search / results logic (updated: show custom message when no data) ----------------- */
 document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchInput");
@@ -19,12 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // basic CNIC check
+    // CNIC check
     let isCnic = number.length === 13 && !isNaN(number);
     if (isCnic) {
       spinner.style.display = "none";
       resultsList.innerHTML = `
-        <div style="text-align:center;">
+        <div style="text-align:center; padding:15px;">
           <h3 style="color:#00fff7;">CNIC Search</h3>
           <p>Contact admin for CNIC details.</p>
         </div>`;
@@ -40,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let res = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
       let data = await res.json();
 
-      // fallback to free API if paid returns 402 or access denied
+      // fallback to free API
       if (res.status === 402 || (data && data.result === "Access Not Allowed. Please Contact Owner.")) {
         res = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
         data = await res.json();
@@ -48,29 +47,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       spinner.style.display = "none";
 
-      // === CONDITION: no data on API ===
-      // Treat as 'no record' if:
-      // - data is falsy
-      // - data.result is falsy
-      // - data.result is the explicit "No SIM data found."
-      // - data.result is an empty array
-      const noData = !data ||
-                     !data.result ||
-                     (Array.isArray(data.result) && data.result.length === 0) ||
-                     (typeof data.result === "string" && data.result.trim() === "No SIM data found.");
-
-      if (noData) {
-        // SHOW CUSTOM MESSAGE — DO NOT show any result table
+      // ==== No Data Check ====
+      if (
+        !data ||
+        !data.result ||
+        data.result === "No SIM data found." ||
+        (Array.isArray(data.result) && data.result.length === 0)
+      ) {
         resultsList.innerHTML = `
           <div style="text-align:center; padding:18px;">
-            <h3 style="color:#ffb86b; margin-bottom:6px;">No Record Found</h3>
-            <p style="color:#ddd; margin:0;">This number is not available in the database. If you believe this is an error, please contact the admin or try another number.</p>
+            <h3 style="color:#ffb86b;">No Record Found</h3>
+            <p style="color:#ddd;">This number is not available in our database. Please try another number.</p>
           </div>`;
         resultsContainer.classList.remove("hidden");
-        return; // stop here — do not build table
+        return; // IMPORTANT: Stop here, do not build table
       }
 
-      // === otherwise show the results table ===
+      // ==== Valid Data => Show Table ====
       let table = `
         <table>
           <thead>
@@ -79,18 +72,23 @@ document.addEventListener("DOMContentLoaded", () => {
             </tr>
           </thead><tbody>
       `;
+
       const resultsArray = Array.isArray(data.result) ? data.result : [data.result];
       resultsArray.forEach(user => {
-        table += `
-          <tr>
-            <td>${user.name || "N/A"}</td>
-            <td>${user.number || "N/A"}</td>
-            <td>${user.cnic || "N/A"}</td>
-            <td>${user.operator || "N/A"}</td>
-            <td>${user.address || "N/A"}</td>
-            <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
-          </tr>`;
+        // only add rows if at least one field has real value
+        if (user.name || user.number || user.cnic || user.operator || user.address) {
+          table += `
+            <tr>
+              <td>${user.name || "N/A"}</td>
+              <td>${user.number || "N/A"}</td>
+              <td>${user.cnic || "N/A"}</td>
+              <td>${user.operator || "N/A"}</td>
+              <td>${user.address || "N/A"}</td>
+              <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
+            </tr>`;
+        }
       });
+
       table += "</tbody></table>";
       resultsList.innerHTML = table;
       resultsContainer.classList.remove("hidden");
@@ -102,47 +100,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // copy helper
+  // Copy Function
   window.copyRow = function(user) {
     const text = `Name: ${user.name}\nNumber: ${user.number}\nCNIC: ${user.cnic}\nOperator: ${user.operator}\nAddress: ${user.address}`;
     navigator.clipboard.writeText(text).then(() => {
       alert("Copied:\n" + text);
-    }).catch(() => {
-      alert("Could not copy to clipboard.");
     });
   };
 
-  /* ----------------- Popup logic (unchanged) ----------------- */
+  /* ----------------- Popup logic ----------------- */
   const popup = document.getElementById("popup");
   const popupClose = document.getElementById("popupClose");
   const popupSkip = document.getElementById("popupSkip");
   const siteContent = document.getElementById("site-content");
 
   function showPopup() {
-    if (!popup) return;
-    popup.classList.remove("hidden");
     popup.style.display = "flex";
-    popup.setAttribute("aria-hidden", "false");
-    if (siteContent) siteContent.classList.add("blurred");
+    siteContent.classList.add("blurred");
   }
 
   function hidePopup() {
-    if (!popup) return;
-    popup.classList.add("hidden");
     popup.style.display = "none";
-    popup.setAttribute("aria-hidden", "true");
-    if (siteContent) siteContent.classList.remove("blurred");
+    siteContent.classList.remove("blurred");
   }
 
   // show popup on load
   showPopup();
 
-  if (popupClose) popupClose.addEventListener("click", hidePopup);
-  if (popupSkip) popupSkip.addEventListener("click", hidePopup);
-
-  if (popup) {
-    popup.addEventListener("click", function(e) {
-      if (e.target === popup) hidePopup();
-    });
-  }
+  popupClose?.addEventListener("click", hidePopup);
+  popupSkip?.addEventListener("click", hidePopup);
+  popup.addEventListener("click", e => {
+    if (e.target === popup) hidePopup();
+  });
 });
