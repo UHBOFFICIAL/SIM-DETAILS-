@@ -1,4 +1,4 @@
-/* ----------------- Search / results logic (kept similar to previous) ----------------- */
+/* ----------------- Search / results logic (updated: show custom message when no data) ----------------- */
 document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchInput");
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsList.innerHTML = `
         <div style="text-align:center;">
           <h3 style="color:#00fff7;">CNIC Search</h3>
-          <p>CNIC details Check Krny ky liye kisi aur server pr jayen.</p>
+          <p>Contact admin for CNIC details.</p>
         </div>`;
       resultsContainer.classList.remove("hidden");
       return;
@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let res = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
       let data = await res.json();
 
+      // fallback to free API if paid returns 402 or access denied
       if (res.status === 402 || (data && data.result === "Access Not Allowed. Please Contact Owner.")) {
         res = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
         data = await res.json();
@@ -47,37 +48,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
       spinner.style.display = "none";
 
-      if (!data || !data.result || data.result === "No SIM data found.") {
+      // === CONDITION: no data on API ===
+      // Treat as 'no record' if:
+      // - data is falsy
+      // - data.result is falsy
+      // - data.result is the explicit "No SIM data found."
+      // - data.result is an empty array
+      const noData = !data ||
+                     !data.result ||
+                     (Array.isArray(data.result) && data.result.length === 0) ||
+                     (typeof data.result === "string" && data.result.trim() === "No SIM data found.");
+
+      if (noData) {
+        // SHOW CUSTOM MESSAGE — DO NOT show any result table
         resultsList.innerHTML = `
-          <div style="text-align:center;">
-            <h3 style="color:#00fff7;">No Record Found</h3>
-            <p>This number is not available in database.</p>
+          <div style="text-align:center; padding:18px;">
+            <h3 style="color:#ffb86b; margin-bottom:6px;">No Record Found</h3>
+            <p style="color:#ddd; margin:0;">This number is not available in the database. If you believe this is an error, please contact the admin or try another number.</p>
           </div>`;
-      } else {
-        let table = `
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th><th>Number</th><th>CNIC</th><th>Operator</th><th>Address</th><th>Copy</th>
-              </tr>
-            </thead><tbody>
-        `;
-        (Array.isArray(data.result) ? data.result : [data.result]).forEach(user => {
-          table += `
-            <tr>
-              <td>${user.name || "N/A"}</td>
-              <td>${user.number || "N/A"}</td>
-              <td>${user.cnic || "N/A"}</td>
-              <td>${user.operator || "N/A"}</td>
-              <td>${user.address || "N/A"}</td>
-              <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
-            </tr>`;
-        });
-        table += "</tbody></table>";
-        resultsList.innerHTML = table;
+        resultsContainer.classList.remove("hidden");
+        return; // stop here — do not build table
       }
 
+      // === otherwise show the results table ===
+      let table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>Number</th><th>CNIC</th><th>Operator</th><th>Address</th><th>Copy</th>
+            </tr>
+          </thead><tbody>
+      `;
+      const resultsArray = Array.isArray(data.result) ? data.result : [data.result];
+      resultsArray.forEach(user => {
+        table += `
+          <tr>
+            <td>${user.name || "N/A"}</td>
+            <td>${user.number || "N/A"}</td>
+            <td>${user.cnic || "N/A"}</td>
+            <td>${user.operator || "N/A"}</td>
+            <td>${user.address || "N/A"}</td>
+            <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
+          </tr>`;
+      });
+      table += "</tbody></table>";
+      resultsList.innerHTML = table;
       resultsContainer.classList.remove("hidden");
+
     } catch (e) {
       spinner.style.display = "none";
       resultsList.innerHTML = `<p style="color:red;text-align:center;">Network error. Please try again later.</p>`;
@@ -95,13 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  /* ----------------- Popup logic (show on page load, blur background) ----------------- */
+  /* ----------------- Popup logic (unchanged) ----------------- */
   const popup = document.getElementById("popup");
   const popupClose = document.getElementById("popupClose");
   const popupSkip = document.getElementById("popupSkip");
   const siteContent = document.getElementById("site-content");
 
-  // function to show popup (and blur site)
   function showPopup() {
     if (!popup) return;
     popup.classList.remove("hidden");
@@ -110,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (siteContent) siteContent.classList.add("blurred");
   }
 
-  // function to hide popup (and remove blur)
   function hidePopup() {
     if (!popup) return;
     popup.classList.add("hidden");
@@ -119,21 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (siteContent) siteContent.classList.remove("blurred");
   }
 
-  // Show popup immediately on load
-  // (if you want a delay, replace with setTimeout(showPopup, 3000); )
+  // show popup on load
   showPopup();
 
-  // close handlers
   if (popupClose) popupClose.addEventListener("click", hidePopup);
   if (popupSkip) popupSkip.addEventListener("click", hidePopup);
 
-  // clicking overlay outside box closes popup
   if (popup) {
     popup.addEventListener("click", function(e) {
       if (e.target === popup) hidePopup();
     });
   }
-
-  // Optional: auto hide after 15s (comment out if not wanted)
-  // setTimeout(hidePopup, 15000);
 });
