@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Center Notification function
   function showNotification(msg) {
     const notification = document.getElementById("notification");
-    if (!notification) return;
     notification.innerHTML = msg;
     notification.classList.remove("hidden");
     notification.classList.add("show");
@@ -105,17 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ----------------- Popup logic ----------------- */
   const popup = document.getElementById("popup");
   const popupClose = document.getElementById("popupClose");
-  const siteContent = document.body;
 
   function showPopup() {
-    if (!popup) return;
     popup.style.display = "flex";
-    siteContent.classList.add("blurred");
   }
   function hidePopup() {
-    if (!popup) return;
     popup.style.display = "none";
-    siteContent.classList.remove("blurred");
   }
   showPopup();
   popupClose?.addEventListener("click", hidePopup);
