@@ -3,26 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sim Database By Unknown Hacker Boy</title>
+  <title>SIM DATABASE BY UNKNOWN HACKER BOY</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </head>
 <body>
 
-  <!-- Popup -->
-  <div id="popup" class="popup-overlay show">
-    <div class="popup-box">
-      <h2>Join Our WhatsApp Channel</h2>
-      <p>Get latest updates & SIM database tools directly on WhatsApp.</p>
-      <a href="https://whatsapp.com/channel/0029VaskVOHBqbr0Rzvg1Z2b" target="_blank">
-        <button class="popup-btn">Join Now</button>
-      </a>
-      <span class="popup-close" onclick="closePopup()">Skip</span>
-    </div>
-  </div>
-
-  <!-- Header -->
+  <!-- Navbar -->
   <nav class="navbar">
     <h1>Sim Database By Unknown Hacker Boy</h1>
   </nav>
@@ -32,7 +20,7 @@
     <input type="text" id="searchInput" placeholder="Enter SIM / CNIC Number">
     <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
     <div class="spinner" id="spinner"></div>
-    <div id="resultsContainer" class="response-box hidden">
+    <div id="resultsContainer" class="results-simple hidden">
       <h2 class="results-heading">Results</h2>
       <div id="resultsList"></div>
     </div>
@@ -48,9 +36,17 @@
     </a>
   </div>
 
+  <!-- WhatsApp Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <span class="close" id="closePopup">&times;</span>
+      <p>Need help? <a href="https://wa.me/923348734337" target="_blank">Contact us on WhatsApp</a></p>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer>
-    <i class="fas fa-user-secret"></i>  DEVELOPED BY UNKNOWN HACKER BOY 
+    <i class="fas fa-user-secret"></i> ⚡ DEVELOPED BY UNKNOWN HACKER BOY ⚡
   </footer>
 
   <script src="script.js"></script>
