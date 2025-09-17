@@ -19,8 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // CNIC check
-    let isCnic = number.length === 13 && !isNaN(number);
-    if (isCnic) {
+    if (number.length === 13 && !isNaN(number)) {
       spinner.style.display = "none";
       resultsList.innerHTML = `
         <div style="text-align:center; padding:15px;">
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let res = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
       let data = await res.json();
 
-      // fallback to free API
+      // fallback
       if (res.status === 402 || (data && data.result === "Access Not Allowed. Please Contact Owner.")) {
         res = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
         data = await res.json();
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       spinner.style.display = "none";
 
-      // ==== No Data Check ====
+      // ✅ Strong no-data check
       if (
         !data ||
         !data.result ||
@@ -55,15 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
         (Array.isArray(data.result) && data.result.length === 0)
       ) {
         resultsList.innerHTML = `
-          <div style="text-align:center; padding:18px;">
-            <h3 style="color:#ffb86b;">No Record Found</h3>
-            <p style="color:#ddd;">This number is not available in our database. Please try another number.</p>
+          <div style="text-align:center; padding:20px;">
+            <h3 style="color:#ffb86b;">⚠ No Record Found</h3>
+            <p style="color:#ddd;">This number is not available in our database.<br/>Try another number or contact admin.</p>
           </div>`;
         resultsContainer.classList.remove("hidden");
-        return; // IMPORTANT: Stop here, do not build table
+        return; // STOP – don’t build table
       }
 
-      // ==== Valid Data => Show Table ====
+      // ✅ Table only if real data
       let table = `
         <table>
           <thead>
@@ -72,24 +71,25 @@ document.addEventListener("DOMContentLoaded", () => {
             </tr>
           </thead><tbody>
       `;
-
       const resultsArray = Array.isArray(data.result) ? data.result : [data.result];
+
       resultsArray.forEach(user => {
-        // only add rows if at least one field has real value
-        if (user.name || user.number || user.cnic || user.operator || user.address) {
+        // only add if actual values exist
+        if (user && (user.name || user.number || user.cnic || user.operator || user.address)) {
           table += `
             <tr>
-              <td>${user.name || "N/A"}</td>
-              <td>${user.number || "N/A"}</td>
-              <td>${user.cnic || "N/A"}</td>
-              <td>${user.operator || "N/A"}</td>
-              <td>${user.address || "N/A"}</td>
+              <td>${user.name || "-"}</td>
+              <td>${user.number || "-"}</td>
+              <td>${user.cnic || "-"}</td>
+              <td>${user.operator || "-"}</td>
+              <td>${user.address || "-"}</td>
               <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
             </tr>`;
         }
       });
 
       table += "</tbody></table>";
+
       resultsList.innerHTML = table;
       resultsContainer.classList.remove("hidden");
 
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Copy Function
+  // Copy function
   window.copyRow = function(user) {
     const text = `Name: ${user.name}\nNumber: ${user.number}\nCNIC: ${user.cnic}\nOperator: ${user.operator}\nAddress: ${user.address}`;
     navigator.clipboard.writeText(text).then(() => {
@@ -124,8 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     siteContent.classList.remove("blurred");
   }
 
-  // show popup on load
-  showPopup();
+  showPopup(); // show popup on load
 
   popupClose?.addEventListener("click", hidePopup);
   popupSkip?.addEventListener("click", hidePopup);
