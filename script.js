@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsList.innerHTML = `
         <div style="text-align:center;">
           <h3 style="color:#00fff7;">CNIC Search</h3>
-          <p>Contact admin for CNIC details.</p>
+          <p>CNIC details Check Krny ky liye kisi aur server pr jayen.</p>
         </div>`;
       resultsContainer.classList.remove("hidden");
       return;
