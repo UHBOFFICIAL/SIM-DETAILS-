@@ -35,18 +35,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let query = number.startsWith("0") ? number.substring(1) : number;
 
     try {
-      let res = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
+      let res = await fetch(
+        `https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`
+      );
       let data = await res.json();
 
-      // fallback
-      if (res.status === 402 || (data && data.result === "Access Not Allowed. Please Contact Owner.")) {
-        res = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
+      // fallback to free API
+      if (
+        res.status === 402 ||
+        (data && data.result === "Access Not Allowed. Please Contact Owner.")
+      ) {
+        res = await fetch(
+          `https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`
+        );
         data = await res.json();
       }
 
       spinner.style.display = "none";
 
-      // ✅ Strong no-data check
+      // ✅ No Data Condition
       if (
         !data ||
         !data.result ||
@@ -59,10 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
             <p style="color:#ddd;">This number is not available in our database.<br/>Try another number or contact admin.</p>
           </div>`;
         resultsContainer.classList.remove("hidden");
-        return; // STOP – don’t build table
+        return; // ❌ Table banane ka code yahan STOP ho gaya
       }
 
-      // ✅ Table only if real data
+      // ✅ Only if real data exists, then build table
       let table = `
         <table>
           <thead>
@@ -71,28 +78,28 @@ document.addEventListener("DOMContentLoaded", () => {
             </tr>
           </thead><tbody>
       `;
-      const resultsArray = Array.isArray(data.result) ? data.result : [data.result];
+      const resultsArray = Array.isArray(data.result)
+        ? data.result
+        : [data.result];
 
-      resultsArray.forEach(user => {
-        // only add if actual values exist
-        if (user && (user.name || user.number || user.cnic || user.operator || user.address)) {
-          table += `
-            <tr>
-              <td>${user.name || "-"}</td>
-              <td>${user.number || "-"}</td>
-              <td>${user.cnic || "-"}</td>
-              <td>${user.operator || "-"}</td>
-              <td>${user.address || "-"}</td>
-              <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(user)})'>Copy</button></td>
-            </tr>`;
-        }
+      resultsArray.forEach((user) => {
+        table += `
+          <tr>
+            <td>${user.name || "-"}</td>
+            <td>${user.number || "-"}</td>
+            <td>${user.cnic || "-"}</td>
+            <td>${user.operator || "-"}</td>
+            <td>${user.address || "-"}</td>
+            <td><button class="copy-btn" onclick='copyRow(${JSON.stringify(
+              user
+            )})'>Copy</button></td>
+          </tr>`;
       });
 
       table += "</tbody></table>";
 
       resultsList.innerHTML = table;
       resultsContainer.classList.remove("hidden");
-
     } catch (e) {
       spinner.style.display = "none";
       resultsList.innerHTML = `<p style="color:red;text-align:center;">Network error. Please try again later.</p>`;
@@ -101,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Copy function
-  window.copyRow = function(user) {
+  window.copyRow = function (user) {
     const text = `Name: ${user.name}\nNumber: ${user.number}\nCNIC: ${user.cnic}\nOperator: ${user.operator}\nAddress: ${user.address}`;
     navigator.clipboard.writeText(text).then(() => {
       alert("Copied:\n" + text);
@@ -128,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   popupClose?.addEventListener("click", hidePopup);
   popupSkip?.addEventListener("click", hidePopup);
-  popup.addEventListener("click", e => {
+  popup.addEventListener("click", (e) => {
     if (e.target === popup) hidePopup();
   });
 });
