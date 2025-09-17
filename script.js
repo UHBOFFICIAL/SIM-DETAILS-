@@ -1,5 +1,3 @@
-window.jsPDF = window.jspdf?.jsPDF;
-
 function closePopup() {
   document.getElementById("popup").style.display = "none";
 }
@@ -29,7 +27,7 @@ searchBtn.addEventListener("click", async () => {
     resultsList.innerHTML = `
       <div style="text-align:center;">
         <h3 style="color:#00fff7;">CNIC Search</h3>
-        <p>You can place your custom CNIC message here. For example: "Contact Admin for CNIC details".</p>
+        <p>You can place your custom CNIC message here.</p>
       </div>`;
     resultsContainer.classList.remove("hidden");
     return;
@@ -40,21 +38,29 @@ searchBtn.addEventListener("click", async () => {
   let query = number.startsWith("0") ? number.substring(1) : number;
 
   try {
-    let res = await fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`);
-    let data = await res.json();
+    let [res, freeRes] = await Promise.allSettled([
+      fetch(`https://api.nexoracle.com/details/pak-sim-database?apikey=${paid_api_key}&q=${query}`),
+      fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`)
+    ]);
 
-    if (res.status === 402 || data.result === "Access Not Allowed. Please Contact Owner.") {
-      res = await fetch(`https://api.nexoracle.com/details/pak-sim-database-free?apikey=${free_api_key}&q=${query}`);
-      data = await res.json();
+    let data = null;
+    if (res.status === "fulfilled") {
+      const paidData = await res.value.json();
+      if (paidData.result && paidData.result !== "Access Not Allowed. Please Contact Owner.") {
+        data = paidData;
+      }
+    }
+    if (!data && freeRes.status === "fulfilled") {
+      data = await freeRes.value.json();
     }
 
     spinner.style.display = "none";
 
-    if (!data.result || data.result === "No SIM data found.") {
+    if (!data || !data.result || data.result === "No SIM data found.") {
       resultsList.innerHTML = `
         <div style="text-align:center;">
           <h3 style="color:#00fff7;">No Record Found</h3>
-          <p>This number is not available in database. You can show a custom message or link here.</p>
+          <p>This number is not available in database. Add custom message here.</p>
         </div>`;
     } else {
       let table = `
@@ -92,4 +98,4 @@ function copyRow(user) {
   const text = `Name: ${user.name}\nNumber: ${user.number}\nCNIC: ${user.cnic}\nOperator: ${user.operator}\nAddress: ${user.address}`;
   navigator.clipboard.writeText(text);
   alert("Copied:\n" + text);
-}
+                           }
