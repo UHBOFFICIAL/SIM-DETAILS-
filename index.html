@@ -6,60 +6,56 @@
   <title>SIM DATABASE BY UNKNOWN HACKER BOY</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
-  <script src="script.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </head>
 <body>
 
-  <!-- WhatsApp Popup (appears on page load, centered) -->
-  <div id="popup" class="popup-overlay" aria-hidden="true">
-    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-      <button class="popup-close" id="popupClose" aria-label="Close popup">✕</button>
-      <h2 id="popupTitle">Join Our WhatsApp Channel</h2>
+  <!-- WhatsApp Popup -->
+  <div id="popup" class="popup-overlay show">
+    <div class="popup-box">
+      <h2>Join Our WhatsApp Channel</h2>
       <p>Get latest updates & SIM database tools directly on WhatsApp.</p>
-      <a href="https://whatsapp.com/channel/0029VaskVOHBqbr0Rzvg1Z2b" target="_blank" class="popup-cta">
+      <a href="https://whatsapp.com/channel/0029VaskVOHBqbr0Rzvg1Z2b" target="_blank">
         <button class="popup-btn">Join Now</button>
       </a>
-      <span class="popup-skip" id="popupSkip">Skip</span>
+      <span id="popupClose" class="popup-close">Skip</span>
     </div>
   </div>
 
-  <!-- All site content wrapped so we can blur it when popup is visible -->
-  <div id="site-content">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>Sim Database By Unknown Hacker Boy</h1>
+  </nav>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-      <h1>Sim Database By Unknown Hacker Boy</h1>
-    </nav>
-
-    <!-- Search Section -->
-    <section class="container">
-      <input type="text" id="searchInput" placeholder="Enter SIM / CNIC Number">
-      <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
-      <div class="spinner" id="spinner" aria-hidden="true"></div>
-
-      <div id="resultsContainer" class="results-simple hidden" aria-live="polite">
-        <h2 class="results-heading">Results</h2>
-        <div id="resultsList"></div>
-      </div>
-    </section>
-
-    <!-- WhatsApp Buttons -->
-    <div class="whatsapp-buttons">
-      <a href="https://wa.me/923348734337" target="_blank" class="whatsapp-btn">
-        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-      </a>
-      <a href="https://whatsapp.com/channel/0029VaskVOHBqbr0Rzvg1Z2b" target="_blank" class="whatsapp-btn">
-        <i class="fab fa-whatsapp"></i> Join Our Channel
-      </a>
+  <!-- Search Section -->
+  <section class="container">
+    <input type="text" id="searchInput" placeholder="Enter SIM / CNIC Number">
+    <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
+    <div class="spinner" id="spinner"></div>
+    <div id="resultsContainer" class="results-simple hidden">
+      <h2 class="results-heading">Results</h2>
+      <div id="resultsList"></div>
     </div>
+  </section>
 
-    <!-- Footer -->
-    <footer>
-      <i class="fas fa-user-secret"></i>  DEVELOPED BY UNKNOWN HACKER BOY 
-    </footer>
+  <!-- WhatsApp Buttons -->
+  <div class="whatsapp-buttons">
+    <a href="https://wa.me/923348734337" target="_blank" class="whatsapp-btn">
+      <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+    </a>
+    <a href="https://whatsapp.com/channel/0029VaskVOHBqbr0Rzvg1Z2b" target="_blank" class="whatsapp-btn">
+      <i class="fab fa-whatsapp"></i> Join Our Channel
+    </a>
+  </div>
 
-  </div> <!-- end site-content -->
+  <!-- Notification -->
+  <div id="notification" class="notification hidden"></div>
 
+  <!-- Footer -->
+  <footer>
+    <i class="fas fa-user-secret"></i> ⚡ DEVELOPED BY UNKNOWN HACKER BOY ⚡
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
